@@ -42,17 +42,19 @@ struct VehicleInfo
 struct PhysVehicle3D : public PhysBody3D
 {
 public:
-	PhysVehicle3D(btRigidBody* body, btRaycastVehicle* vehicle, const VehicleInfo& info);
+	PhysVehicle3D(btRigidBody* body, btRaycastVehicle* vehicle, const VehicleInfo& info, int playernum=1);
 	~PhysVehicle3D();
 
-	void Render(int playernum);
+	void Render();
 	void ApplyEngineForce(float force);
 	void Brake(float force);
 	void Turn(float degrees);
 	float GetKmh() const;
+	void Respawn();
 public:
 
 	VehicleInfo info;
 	btRaycastVehicle* vehicle;
 	PhysBody3D* last_checkpoint=nullptr;
+	int playernum;
 };

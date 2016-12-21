@@ -10,7 +10,7 @@ VehicleInfo::~VehicleInfo()
 }
 
 // ----------------------------------------------------------------------------
-PhysVehicle3D::PhysVehicle3D(btRigidBody* body, btRaycastVehicle* vehicle, const VehicleInfo& info) : PhysBody3D(body), vehicle(vehicle), info(info)
+PhysVehicle3D::PhysVehicle3D(btRigidBody* body, btRaycastVehicle* vehicle, const VehicleInfo& info, int playernum) : PhysBody3D(body), vehicle(vehicle), info(info), playernum(playernum)
 {
 }
 
@@ -21,7 +21,7 @@ PhysVehicle3D::~PhysVehicle3D()
 }
 
 // ----------------------------------------------------------------------------
-void PhysVehicle3D::Render(int playernum)
+void PhysVehicle3D::Render()
 {
 	Cylinder wheel;
 
@@ -98,4 +98,13 @@ void PhysVehicle3D::Turn(float degrees)
 float PhysVehicle3D::GetKmh() const
 {
 	return vehicle->getCurrentSpeedKmHour();
+}
+
+void PhysVehicle3D::Respawn() {
+	mat4x4 newpos;
+	last_checkpoint->GetTransform(&newpos);
+	newpos.rotate(-90, { 0,1,0 });
+	SetTransform(&newpos);
+	GetRigidBody()->setAngularVelocity(btVector3(0, 0, 0));
+	GetRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
 }

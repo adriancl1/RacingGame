@@ -31,7 +31,7 @@ public:
 	PhysBody3D* AddBody(const Sphere& sphere, float mass = 1.0f);
 	PhysBody3D* AddBody(const Cube& cube, float mass = 1.0f);
 	PhysBody3D* AddBody(const Cylinder& cylinder, float mass = 1.0f);
-	PhysVehicle3D* AddVehicle(const VehicleInfo& info);
+	PhysVehicle3D* AddVehicle(const VehicleInfo& info, int playernum=1);
 	void AddFence(vec3 size, float posx, float posy, float posz, float angle = 0, vec3 rot = { 0,0,0 });
 	void AddInvisibleWall(vec3 size, int posx, int posy, int posz);
 

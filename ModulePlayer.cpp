@@ -21,7 +21,7 @@ bool ModulePlayer::Start()
 	VehicleInfo car;
 
 	// Car properties ----------------------------------------
-	car.chassis_size.Set(2, 1, 4);
+	car.chassis_size.Set(2, 2, 4);
 	car.chassis_offset.Set(0, 1.5, 0);
 	car.mass = 1000.0f;
 	car.suspensionStiffness = 15.88f;
@@ -96,7 +96,7 @@ bool ModulePlayer::Start()
 	car.wheels[3].brake = true;
 	car.wheels[3].steering = false;
 
-	vehicle = App->physics->AddVehicle(car);
+	vehicle = App->physics->AddVehicle(car, num);
 	if (num == 1) {
 		vehicle->SetPos(0, 12, 48);
 	}
@@ -104,6 +104,11 @@ bool ModulePlayer::Start()
 		vehicle->SetPos(2, 12, 48);
 	}
 	vehicle->collision_listeners.add(this);
+	mat4x4 initial;
+	vehicle->GetTransform(&initial);
+	initial.rotate(-90, { 0,1,0 });
+	vehicle->SetTransform(&initial);
+
 	vehicle->last_checkpoint = App->scene_intro->checkpoints[0];
 
 	return true;
@@ -183,7 +188,7 @@ update_status ModulePlayer::Update(float dt)
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
 
-	vehicle->Render(num);
+	vehicle->Render();
 
 	char title[80];
 	sprintf_s(title, "%.1f Km/h", vehicle->GetKmh());

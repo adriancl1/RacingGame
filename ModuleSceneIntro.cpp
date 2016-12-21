@@ -64,7 +64,6 @@ update_status ModuleSceneIntro::Update(float dt)
 		music_time = SDL_GetTicks() + 9000;
 	}
 
-	cubes.getFirst();
 	for (p2List_item<Cube>* cubelist = cubes.getFirst(); cubelist; cubelist = cubelist->next) {
 		cubelist->data.Render();
 	}
@@ -74,6 +73,7 @@ update_status ModuleSceneIntro::Update(float dt)
 		cylinderlist->data.Render();
 		cylinderbody = cylinderbody->next;
 	}
+
 	ballbody->GetTransform(&(ball.transform));
 	ball.Render();
 	stickbody->GetTransform(&(stick.transform));
@@ -86,8 +86,10 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 	LOG("Hit!");
 	if (body2->IsVehicle()) {
 		if (!body1->IsCheckpoint() && body1->IsSensor()) {
-			vec3 newpos = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointPos();
-			body2->SetPos(newpos.x, newpos.y, newpos.z);
+			//vec3 newpos = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointPos();
+			//body2->SetPos(newpos.x, newpos.y, newpos.z);
+			((PhysVehicle3D*)body2)->Respawn();
+
 			LOG("CHECK");
 		}
 		if (body1->IsCheckpoint() && body1 != ((PhysVehicle3D*)body2)->last_checkpoint) {

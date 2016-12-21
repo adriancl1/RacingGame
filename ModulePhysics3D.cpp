@@ -271,7 +271,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const Cylinder& cylinder, float mass)
 }
 
 // ---------------------------------------------------------
-PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info)
+PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info, int playernum)
 {
 	btCompoundShape* comShape = new btCompoundShape();
 	shapes.add(comShape);
@@ -322,7 +322,7 @@ PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info)
 	}
 	// ---------------------
 
-	PhysVehicle3D* pvehicle = new PhysVehicle3D(body, vehicle, info);
+	PhysVehicle3D* pvehicle = new PhysVehicle3D(body, vehicle, info, playernum);
 	world->addVehicle(vehicle);
 	pvehicle->is_vehicle = true;
 	vehicles.add(pvehicle);
