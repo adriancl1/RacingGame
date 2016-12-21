@@ -20,6 +20,8 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
+	void CreateStage();
+
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 
 public:
@@ -42,7 +44,14 @@ public:
 	Cube roof;
 	PhysBody3D* roofbody;
 
+	const char* themes[6];
+	int music_time;
+	int current_time;
 
+	uint lap;
+	uint finish;
+	uint respawn;
+	uint start;
 	int checkpoint_id=0;
 
 	PhysBody3D* sensor;

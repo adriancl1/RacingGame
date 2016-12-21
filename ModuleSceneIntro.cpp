@@ -4,6 +4,7 @@
 #include "Primitive.h"
 #include "PhysBody3D.h"
 #include "PhysVehicle3D.h"
+#include <time.h>
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -18,9 +19,95 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-	App->camera->Move(vec3(0.0f, 120.0f, 0.0f));
+	App->camera->Move(vec3(0.0f, 60.0f, 120.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
+	themes[0] = "audio/super_bus_racing_theme_1.ogg";
+	themes[1] = "audio/super_bus_racing_theme_2.ogg";
+	themes[2] = "audio/super_bus_racing_theme_3.ogg";
+	themes[3] = "audio/super_bus_racing_theme_1_base.ogg";
+	themes[4] = "audio/super_bus_racing_theme_2_base.ogg";
+	themes[5] = "audio/super_bus_racing_theme_3_base.ogg";
+
+	lap = App->audio->LoadFx("audio/LAP.wav");
+	start = App->audio->LoadFx("audio/super_bus_racing_name.ogg");
+
+	App->audio->PlayMusic(themes[0]);
+	music_time = SDL_GetTicks() + 9000;
+	srand(time(NULL));
+	CreateStage();
+	App->audio->PlayFx(start);
+	return ret;
+}
+
+// Load assets
+bool ModuleSceneIntro::CleanUp()
+{
+	LOG("Unloading Intro scene");
+
+	return true;
+}
+
+// Update
+update_status ModuleSceneIntro::Update(float dt)
+{
+	current_time = SDL_GetTicks();
+
+	if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
+		ballbody->Push(0, 0, 100);
+	}
+
+	//PLAY A RANDOM THEME EVERY 9 SECONDS 
+	if (current_time > music_time) {
+		int random_theme = rand() % 5;
+		App->audio->PlayMusic(themes[random_theme], 0);
+		music_time = SDL_GetTicks() + 9000;
+	}
+
+	cubes.getFirst();
+	for (p2List_item<Cube>* cubelist = cubes.getFirst(); cubelist; cubelist = cubelist->next) {
+		cubelist->data.Render();
+	}
+	p2List_item<PhysBody3D*>* cylinderbody = cylinderBodies.getFirst();
+	for (p2List_item<Cylinder>* cylinderlist = cylinders.getFirst(); cylinderlist; cylinderlist = cylinderlist->next) {
+		cylinderbody->data->GetTransform(&(cylinderlist->data.transform));
+		cylinderlist->data.Render();
+		cylinderbody = cylinderbody->next;
+	}
+	ballbody->GetTransform(&(ball.transform));
+	ball.Render();
+	stickbody->GetTransform(&(stick.transform));
+	stick.Render();
+	return UPDATE_CONTINUE;
+}
+
+void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
+{
+	LOG("Hit!");
+	if (body2->IsVehicle()) {
+		if (!body1->IsCheckpoint() && body1->IsSensor()) {
+			vec3 newpos = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointPos();
+			body2->SetPos(newpos.x, newpos.y, newpos.z);
+			LOG("CHECK");
+		}
+		if (body1->IsCheckpoint() && body1 != ((PhysVehicle3D*)body2)->last_checkpoint) {
+			int nextid = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointId() + 1;
+			if (body1->CheckPointId() == nextid)
+			{
+				((PhysVehicle3D*)body2)->last_checkpoint = body1;
+			}
+			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM) {
+				((PhysVehicle3D*)body2)->last_checkpoint = body1;
+				App->audio->PlayFx(lap);
+			}
+		}
+		if (body2->IsCheckpoint()) {
+			LOG("CHECK2");
+		}
+	}
+}
+
+void ModuleSceneIntro::CreateStage() {
 	Cube death;
 	death.size = vec3(180.0f, 0.1f, 180.0f);
 	death.SetPos(0, 8, 0);
@@ -87,7 +174,7 @@ bool ModuleSceneIntro::Start()
 	cyl2.color = DarkRed;
 	cylinders.add(cyl2);
 	cylinderBodies.add(App->physics->AddBody(cyl2, 200.0f));
-	
+
 
 
 	App->physics->AddFence({ 10.0f, 7.0f, 14.0f }, -31, 14, 39, 29, { 0,0,1 });//RAMP LEFT
@@ -128,10 +215,10 @@ bool ModuleSceneIntro::Start()
 
 	//App->physics->AddFence({ 9.0f, 2.0f, 2.0f }, 0, 15, 0, 45, { 1,0,0 });//SMALL RAMP
 
-	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 0, 45, { 1,0,0 });//TOP RAMP DOWN
-	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 5, 45, { 1,0,0 });//TOP RAMP DOWN
-	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 10, 45, { 1,0,0 });//TOP RAMP DOWN
-	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 15, 45, { 1,0,0 });//TOP RAMP DOWN
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 0, 45, { 1,0,0 });//SMALL RAMP
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 5, 45, { 1,0,0 });//TSMALL RAMP
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 10, 45, { 1,0,0 });//SMALL RAMP
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 15, 45, { 1,0,0 });//SMALL RAMP
 
 
 	App->physics->AddInvisibleWall({ 28.0f, 10.0f, 2.0f }, -23, 23, 33);//BOTTOM RAMP WALL
@@ -140,77 +227,21 @@ bool ModuleSceneIntro::Start()
 
 	//ball
 	ball.radius = 3;
-	ball.SetPos(0, 18, 0);
+	ball.SetPos(10, 20, -20);
 	ball.color = Gray;
-	ballbody=App->physics->AddBody(ball);
+	ballbody = App->physics->AddBody(ball);
 
-	stick.size = { 0.1f,10.0f,0.1f };
+	stick.size = { 0.1f,20.0f,0.1f };
 	stick.color = Blue;
-	stick.SetPos(0, 18, 10);
+	stick.SetPos(10, 30, -30);
 
 	stickbody = App->physics->AddBody(stick);
 
 	roof.size = { 5.0f,1.0f,5.0f };
 	roof.color = Blue;
-	roof.SetPos(0, 50, 10);
+	roof.SetPos(10, 50, -30);
 	roofbody = App->physics->AddBody(roof, 0);
 
-	App->physics->AddConstraintHinge(*roofbody, *stickbody, { 0,-0.5f,0 }, { 0,-5,0 }, { 0,0,1 }, { 0,0,1 });
-	App->physics->AddConstraintP2P(*stickbody, *ballbody, { 0,5,0 }, { 0,3,0 });
-
-	return ret;
-}
-
-// Load assets
-bool ModuleSceneIntro::CleanUp()
-{
-	LOG("Unloading Intro scene");
-
-	return true;
-}
-
-// Update
-update_status ModuleSceneIntro::Update(float dt)
-{
-
-	cubes.getFirst();
-	for (p2List_item<Cube>* cubelist = cubes.getFirst(); cubelist; cubelist = cubelist->next) {
-		cubelist->data.Render();
-	}
-	p2List_item<PhysBody3D*>* cylinderbody = cylinderBodies.getFirst();
-	for (p2List_item<Cylinder>* cylinderlist = cylinders.getFirst(); cylinderlist; cylinderlist = cylinderlist->next) {
-		cylinderbody->data->GetTransform(&(cylinderlist->data.transform));
-		cylinderlist->data.Render();
-		cylinderbody = cylinderbody->next;
-	}
-	ballbody->GetTransform(&(ball.transform));
-	ball.Render();
-	stickbody->GetTransform(&(stick.transform));
-	stick.Render();
-	return UPDATE_CONTINUE;
-}
-
-void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
-{
-	LOG("Hit!");
-	if (body2->IsVehicle()) {
-		if (!body1->IsCheckpoint() && body1->IsSensor()) {
-			vec3 newpos = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointPos();
-			body2->SetPos(newpos.x, newpos.y, newpos.z);
-			LOG("CHECK");
-		}
-		if (body1->IsCheckpoint() && body1 != ((PhysVehicle3D*)body2)->last_checkpoint) {
-			int nextid = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointId() + 1;
-			if (body1->CheckPointId() == nextid)
-			{
-				((PhysVehicle3D*)body2)->last_checkpoint = body1;
-			}
-			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM) {
-				((PhysVehicle3D*)body2)->last_checkpoint = body1;
-			}
-		}
-		if (body2->IsCheckpoint()) {
-			LOG("CHECK2");
-		}
-	}
+	App->physics->AddConstraintHinge(*roofbody, *stickbody, { 0,-0.5f,0 }, { 0,10,0 }, { 1,0,0 }, { 1,0,0 });
+	App->physics->AddConstraintHinge(*stickbody, *ballbody, { 0,-10,0 }, { 0,3,0 }, { 0,1,0 }, { 0,1,0 });
 }
