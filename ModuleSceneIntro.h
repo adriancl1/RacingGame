@@ -20,9 +20,6 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	void AddFence(vec3 size, float posx, float posy, float posz, float angle = 0, vec3 rot = { 0,0,0 });
-	void AddInvisibleWall(vec3 size, int posx, int posy, int posz);
-
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 
 public:
@@ -36,10 +33,10 @@ public:
 
 	p2List<Cube> cubes;
 	p2List<Cube> invisibleWalls;
+	p2List<Cylinder> cylinders;
 
 	int checkpoint_id=0;
 
-	Cube s;
 	PhysBody3D* sensor;
 	PhysBody3D* deathsensor;
 	PhysBody3D* checkpoints[CHECKPOINT_NUM];

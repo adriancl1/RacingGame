@@ -23,6 +23,7 @@ public:
 	void SetAsCheckpoint(bool is_checkpoint, int id, vec3 pos = { 0,0,0 });
 	bool IsSensor() const;
 	bool IsCheckpoint() const;
+	bool IsVehicle() const;
 	vec3 CheckPointPos()const;
 	int CheckPointId() const;
 
@@ -32,6 +33,7 @@ private:
 	bool is_checkpoint = false;
 	vec3 checkpoint_pos = { 0,0,0 };
 	int id = 0;
+	bool is_vehicle = false;
 
 public:
 	p2List<Module*> collision_listeners;

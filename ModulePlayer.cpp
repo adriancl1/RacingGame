@@ -98,6 +98,7 @@ bool ModulePlayer::Start()
 
 	vehicle = App->physics->AddVehicle(car);
 	vehicle->SetPos(0, 12, 48);
+	vehicle->collision_listeners.add(this);
 	vehicle->last_checkpoint = App->scene_intro->checkpoints[0];
 
 	return true;
@@ -151,5 +152,25 @@ update_status ModulePlayer::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
+void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
+	/*if (!body2->IsCheckpoint() && body2->IsSensor()) {
+		vec3 newpos = ((PhysVehicle3D*)body1)->last_checkpoint->CheckPointPos();
+		body1->SetPos(newpos.x, newpos.y, newpos.z);
+		LOG("CHECK");
+	}
+	if (body2->IsCheckpoint() && body2 != ((PhysVehicle3D*)body1)->last_checkpoint) {
+		int nextid = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointId() + 1;
+		if (body2->CheckPointId() == nextid)
+		{
+			((PhysVehicle3D*)body1)->last_checkpoint = body2;
+		}
+		else if (body2->CheckPointId() == 0 && nextid == CHECKPOINT_NUM) {
+			((PhysVehicle3D*)body1)->last_checkpoint = body2;
+		}
+	}
+	if (body1->IsCheckpoint()) {
+		LOG("CHECK2");
+	}*/
+}
 
 

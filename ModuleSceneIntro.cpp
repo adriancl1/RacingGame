@@ -71,42 +71,62 @@ bool ModuleSceneIntro::Start()
 	cubes.add(floor);
 	App->physics->AddBody(floor, 0);
 
+	Cylinder cyl1;
+	cyl1.SetRotation(90, { 0,0,1 });
+	cyl1.radius = 2;
+	cyl1.height = 3;
+	cyl1.SetPos(-10, 18, 48);
+	cylinders.add(cyl1);
+	App->physics->AddBody(cyl1);
 
-	/*AddFence({ 10.0f, 7.0f, 14.0f }, -31, 14, 39, 29, { 0,0,1 });//RAMP LEFT
+	Cylinder cyl2;
+	cyl2.SetRotation(90, { 0,0,1 });
+	cyl2.radius = 2;
+	cyl2.height = 3;
+	cyl2.SetPos(-10, 21, 48);
+	cylinders.add(cyl2);
+	App->physics->AddBody(cyl2);
+	
 
 
-	AddFence({ 10.0f, 5.0f, 14.0f }, -23, 17, 39);//RAMP CENTER
+	App->physics->AddFence({ 10.0f, 7.0f, 14.0f }, -31, 14, 39, 29, { 0,0,1 });//RAMP LEFT
 
 
-	AddFence({ 10.0f, 7.0f, 14.0f }, -15, 14, 39, -34, { 0,0,1 });//RAMP RIGHT
+	App->physics->AddFence({ 10.0f, 5.0f, 14.0f }, -23, 17, 39);//RAMP CENTER
 
-	AddFence({ 20.0f, 8.0f, 68.0f }, -50, 19, -26); // TOP LEFT 
 
-	AddFence({ 34.0f, 8.0f, 20.0f }, -23, 19, -50); // TOP 
-	AddFence({ 68.0f, 4.0f, 20.0f }, -10, 17, -50); // TOP 
-	AddFence({ 14.0f, 5.0f, 20.0f }, -1.5, 17.0f, -50, 34, { 0,0,-1 });//TOP RAMP 2 DOWN
+	App->physics->AddFence({ 10.0f, 7.0f, 14.0f }, -15, 14, 39, -34, { 0,0,1 });//RAMP RIGHT
 
-	AddFence({ 80.0f, 3.0f, 2.0f }, 0, 16, 45); // BOTTOM 
+	App->physics->AddFence({ 20.0f, 8.0f, 68.0f }, -50, 19, -26); // TOP LEFT 
 
-	AddFence({ 2.0f, 3.0f, 30.0f }, 40, 16, 31);//BOTTOM RIGHT
+	App->physics->AddFence({ 34.0f, 8.0f, 20.0f }, -23, 19, -50); // TOP 
+	App->physics->AddFence({ 68.0f, 4.0f, 20.0f }, -10, 17, -50); // TOP SMALL
+	App->physics->AddFence({ 13.0f, 8.0f, 20.0f }, 21, 19, -50); // TOP 
+	App->physics->AddFence({ 14.0f, 5.0f, 20.0f }, -1.5, 17.0f, -50, 34, { 0,0,-1 });//TOP RAMP 2 DOWN
 
-	AddFence({ 38.0f, 3.0f, 2.0f }, 41, 16, 0);//CENTER RIGHT
+	App->physics->AddFence({ 14.0f, 5.0f, 20.0f }, 10, 17.0f, -50, 34, { 0,0,1 });//TOP RAMP 2 UP
 
-	AddFence({ 2.0f, 3.0f, 30.0f }, 21, 16, 14);//CENTER RIGHT DOWN
+	App->physics->AddFence({ 80.0f, 3.0f, 2.0f }, 0, 16, 45); // BOTTOM 
 
-	AddFence({ 2.0f, 3.0f, 88.0f }, 4, 16, 0);//ACROSS MIDDLE
+	App->physics->AddFence({ 2.0f, 3.0f, 30.0f }, 40, 16, 31);//BOTTOM RIGHT
 
-	AddFence({ 50.0f, 3.0f, 2.0f }, -35, 16, 33);//RAMP FENCE
+	App->physics->AddFence({ 38.0f, 3.0f, 2.0f }, 41, 16, 0);//CENTER RIGHT
 
-	AddFence({ 2.0f, 3.0f, 60.0f }, -10, 16, 4);//RAMP FENCE UP
+	App->physics->AddFence({ 2.0f, 3.0f, 30.0f }, 21, 16, 14);//CENTER RIGHT DOWN
 
-	AddFence({ 20.0f, 10.0f, 14.0f }, -50, 15, 11, 34, { 1,0,0 });//TOP RAMP UP
+	App->physics->AddFence({ 2.0f, 3.0f, 88.0f }, 4, 16, 0);//ACROSS MIDDLE
 
-	AddFence({ 14.0f, 10.0f, 20.0f }, 31, 15, -50, 34, { 0,0,-1 });//TOP RAMP DOWN*/
+	App->physics->AddFence({ 50.0f, 3.0f, 2.0f }, -35, 16, 33);//RAMP FENCE
 
-	AddInvisibleWall({ 28.0f, 10.0f, 2.0f }, -23, 23, 33);//BOTTOM RAMP WALL
+	App->physics->AddFence({ 2.0f, 3.0f, 60.0f }, -10, 16, 4);//RAMP FENCE UP
 
-	AddInvisibleWall({ 68.0f, 6.0f, 0.10f }, -6, 26, -40);//TOP WALL 
+	App->physics->AddFence({ 20.0f, 10.0f, 14.0f }, -50, 15, 11, 34, { 1,0,0 });//TOP RAMP UP
+
+	App->physics->AddFence({ 14.0f, 10.0f, 20.0f }, 31, 15, -50, 34, { 0,0,-1 });//TOP RAMP DOWN
+
+	App->physics->AddInvisibleWall({ 28.0f, 10.0f, 2.0f }, -23, 23, 33);//BOTTOM RAMP WALL
+
+	App->physics->AddInvisibleWall({ 68.0f, 8.0f, 0.10f }, -6, 23, -40);//TOP WALL 
 
 
 	return ret;
@@ -128,52 +148,33 @@ update_status ModuleSceneIntro::Update(float dt)
 	for (p2List_item<Cube>* cubelist = cubes.getFirst(); cubelist; cubelist = cubelist->next) {
 		cubelist->data.Render();
 	}
-
+	for (p2List_item<Cylinder>* cylinderlist = cylinders.getFirst(); cylinderlist; cylinderlist = cylinderlist->next) {
+		cylinderlist->data.Render();
+	}
 	return UPDATE_CONTINUE;
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
 	LOG("Hit!");
-	if (!body1->IsCheckpoint() && body1->IsSensor()) {
-		vec3 newpos = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointPos();
-		body2->SetPos(newpos.x, newpos.y, newpos.z);
-		LOG("CHECK");
-	}
-	if (body1->IsCheckpoint() && body1 != ((PhysVehicle3D*)body2)->last_checkpoint) {
-		int nextid = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointId() + 1;
-		if (body1->CheckPointId()==nextid)
-		{
-			((PhysVehicle3D*)body2)->last_checkpoint = body1;
+	if (body2->IsVehicle()) {
+		if (!body1->IsCheckpoint() && body1->IsSensor()) {
+			vec3 newpos = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointPos();
+			body2->SetPos(newpos.x, newpos.y, newpos.z);
+			LOG("CHECK");
 		}
-		else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM) {
-			((PhysVehicle3D*)body2)->last_checkpoint = body1;
+		if (body1->IsCheckpoint() && body1 != ((PhysVehicle3D*)body2)->last_checkpoint) {
+			int nextid = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointId() + 1;
+			if (body1->CheckPointId() == nextid)
+			{
+				((PhysVehicle3D*)body2)->last_checkpoint = body1;
+			}
+			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM) {
+				((PhysVehicle3D*)body2)->last_checkpoint = body1;
+			}
+		}
+		if (body2->IsCheckpoint()) {
+			LOG("CHECK2");
 		}
 	}
-	if (body2->IsCheckpoint()) {
-		LOG("CHECK2");
-	}
 }
-
-void ModuleSceneIntro::AddFence(vec3 size, float posx, float posy, float posz, float angle, vec3 rot) {
-	Cube fence;
-	fence.size = size;
-	fence.SetPos(posx, posy, posz);
-	if (angle != 0) {
-		fence.SetRotation(angle, rot);
-	}
-
-	fence.color = Green;
-	cubes.add(fence);
-	App->physics->AddBody(fence, 0);
-}
-
-void ModuleSceneIntro::AddInvisibleWall(vec3 size, int posx, int posy, int posz) {
-	Cube fence;
-	fence.size = size;
-	fence.SetPos(posx, posy, posz);
-
-	invisibleWalls.add(fence);
-	App->physics->AddBody(fence, 0);
-}
-

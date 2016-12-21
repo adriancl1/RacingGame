@@ -324,6 +324,7 @@ PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info)
 
 	PhysVehicle3D* pvehicle = new PhysVehicle3D(body, vehicle, info);
 	world->addVehicle(vehicle);
+	pvehicle->is_vehicle = true;
 	vehicles.add(pvehicle);
 
 
@@ -357,6 +358,29 @@ void ModulePhysics3D::AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, c
 	constraints.add(hinge);
 	hinge->setDbgDrawSize(2.0f);
 }
+
+void ModulePhysics3D::AddFence(vec3 size, float posx, float posy, float posz, float angle, vec3 rot) {
+	Cube fence;
+	fence.size = size;
+	fence.SetPos(posx, posy, posz);
+	if (angle != 0) {
+		fence.SetRotation(angle, rot);
+	}
+
+	fence.color = Green;
+	App->scene_intro->cubes.add(fence);
+	App->physics->AddBody(fence, 0);
+}
+
+void ModulePhysics3D::AddInvisibleWall(vec3 size, int posx, int posy, int posz) {
+	Cube wall;
+	wall.size = size;
+	wall.SetPos(posx, posy, posz);
+
+	App->scene_intro->invisibleWalls.add(wall);
+	App->physics->AddBody(wall, 0);
+}
+
 
 // =============================================
 void DebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)
