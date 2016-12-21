@@ -26,6 +26,7 @@ public:
 	bool IsVehicle() const;
 	vec3 CheckPointPos()const;
 	int CheckPointId() const;
+	btRigidBody* GetRigidBody()const;
 
 private:
 	btRigidBody* body = nullptr;
