@@ -54,8 +54,23 @@ void PhysVehicle3D::Render()
 	chassis.transform.M[13] += offset.getY();
 	chassis.transform.M[14] += offset.getZ();
 
+	//windows
+	Cube window(info.chassis_size.x*1.2, info.chassis_size.y*.3, info.chassis_size.z);
+
+	vehicle->getChassisWorldTransform().getOpenGLMatrix(&window.transform);
+
+	btVector3 offset2(info.windows_offset.x, info.windows_offset.y, info.windows_offset.z);
+	offset2 = offset2.rotate(q.getAxis(), q.getAngle());
+
+
+	window.transform.M[12] += offset2.getX();
+	window.transform.M[13] += offset2.getY();
+	window.transform.M[14] += offset2.getZ();
+
+	window.color = Black;
 
 	chassis.Render();
+	window.Render();
 }
 
 // ----------------------------------------------------------------------------
@@ -107,4 +122,5 @@ void PhysVehicle3D::Respawn() {
 	SetTransform(&newpos);
 	GetRigidBody()->setAngularVelocity(btVector3(0, 0, 0));
 	GetRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
+
 }

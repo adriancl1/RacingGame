@@ -31,6 +31,8 @@ bool ModuleSceneIntro::Start()
 
 	lap = App->audio->LoadFx("audio/LAP.wav");
 	start = App->audio->LoadFx("audio/super_bus_racing_name.ogg");
+	respawn = App->audio->LoadFx("audio/RESPAWN.wav");
+	victory = App->audio->LoadFx("audio/FINISH.wav");
 
 	App->audio->PlayMusic(themes[0]);
 	music_time = SDL_GetTicks() + 9000;
@@ -78,6 +80,11 @@ update_status ModuleSceneIntro::Update(float dt)
 	ball.Render();
 	stickbody->GetTransform(&(stick.transform));
 	stick.Render();
+
+	char title[80];
+	sprintf_s(title, "P1 Laps: %i P2 Laps: %i", App->player1->vehicle->laps, App->player2->vehicle->laps);
+	App->window->SetTitle(title);
+
 	return UPDATE_CONTINUE;
 }
 
@@ -86,10 +93,8 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 	LOG("Hit!");
 	if (body2->IsVehicle()) {
 		if (!body1->IsCheckpoint() && body1->IsSensor()) {
-			//vec3 newpos = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointPos();
-			//body2->SetPos(newpos.x, newpos.y, newpos.z);
 			((PhysVehicle3D*)body2)->Respawn();
-
+			App->audio->PlayFx(respawn);
 			LOG("CHECK");
 		}
 		if (body1->IsCheckpoint() && body1 != ((PhysVehicle3D*)body2)->last_checkpoint) {
@@ -98,9 +103,13 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			{
 				((PhysVehicle3D*)body2)->last_checkpoint = body1;
 			}
-			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM) {
+			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps<3) {
 				((PhysVehicle3D*)body2)->last_checkpoint = body1;
+				((PhysVehicle3D*)body2)->laps++;
 				App->audio->PlayFx(lap);
+			}
+			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps == 3) {
+				App->audio->PlayFx(victory);
 			}
 		}
 		if (body2->IsCheckpoint()) {
@@ -178,16 +187,35 @@ void ModuleSceneIntro::CreateStage() {
 	cylinderBodies.add(App->physics->AddBody(cyl2, 200.0f));
 
 
+	App->physics->AddFence({ 10.0f, 7.0f, 17.0f }, -31, 14, 35, 29, { 0,0,1 });//RAMP LEFT
 
-	App->physics->AddFence({ 10.0f, 7.0f, 14.0f }, -31, 14, 39, 29, { 0,0,1 });//RAMP LEFT
+	App->physics->AddFence({ 10.0f, 5.0f, 17.0f }, -23, 17, 35);//RAMP CENTER
 
+	App->physics->AddFence({ 10.0f, 7.0f, 17.0f }, -15, 14, 35, -34, { 0,0,1 });//RAMP RIGHT
 
-	App->physics->AddFence({ 10.0f, 5.0f, 14.0f }, -23, 17, 39);//RAMP CENTER
+	App->physics->AddFence({ 80.0f, 3.0f, 2.0f }, 0, 16, 43); // BOTTOM 
 
+	App->physics->AddFence({ 2.0f, 3.0f, 32.0f }, 40, 16, 28);//BOTTOM RIGHT
 
-	App->physics->AddFence({ 10.0f, 7.0f, 14.0f }, -15, 14, 39, -34, { 0,0,1 });//RAMP RIGHT
+	App->physics->AddFence({ 38.0f, 3.0f, 2.0f }, 41, 16, -7);//CENTER RIGHT
 
-	App->physics->AddFence({ 20.0f, 8.0f, 68.0f }, -50, 19, -26); // TOP LEFT 
+	App->physics->AddFence({ 2.0f, 3.0f, 30.0f }, 21, 16, 7);//CENTER RIGHT DOWN
+
+	App->physics->AddFence({ 2.0f, 3.0f, 90.0f }, 4, 16, -2);//ACROSS MIDDLE
+
+	App->physics->AddFence({ 50.0f, 3.0f, 2.0f }, -35, 16, 26);//RAMP FENCE
+
+	App->physics->AddFence({ 2.0f, 3.0f, 50.0f }, -10, 16, 2);//RAMP FENCE UP
+
+	//App->physics->AddFence({ 9.0f, 2.0f, 2.0f }, 0, 15, 0, 45, { 1,0,0 });//SMALL RAMP
+
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, -7, 45, { 1,0,0 });//SMALL RAMP
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, -2, 45, { 1,0,0 });//TSMALL RAMP
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 3, 45, { 1,0,0 });//SMALL RAMP
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 8, 45, { 1,0,0 });//SMALL RAMP
+
+	//TOP ----------
+	App->physics->AddFence({ 20.0f, 8.0f, 50.0f }, -50, 19, -35); // TOP LEFT 
 
 	App->physics->AddFence({ 34.0f, 8.0f, 20.0f }, -23, 19, -50); // TOP 
 	App->physics->AddFence({ 68.0f, 4.0f, 20.0f }, -10, 17, -50); // TOP SMALL
@@ -196,54 +224,35 @@ void ModuleSceneIntro::CreateStage() {
 
 	App->physics->AddFence({ 14.0f, 5.0f, 20.0f }, 10, 17.0f, -50, 34, { 0,0,1 });//TOP RAMP 2 UP
 
-	App->physics->AddFence({ 80.0f, 3.0f, 2.0f }, 0, 16, 45); // BOTTOM 
-
-	App->physics->AddFence({ 2.0f, 3.0f, 30.0f }, 40, 16, 31);//BOTTOM RIGHT
-
-	App->physics->AddFence({ 38.0f, 3.0f, 2.0f }, 41, 16, 0);//CENTER RIGHT
-
-	App->physics->AddFence({ 2.0f, 3.0f, 30.0f }, 21, 16, 14);//CENTER RIGHT DOWN
-
-	App->physics->AddFence({ 2.0f, 3.0f, 88.0f }, 4, 16, 0);//ACROSS MIDDLE
-
-	App->physics->AddFence({ 50.0f, 3.0f, 2.0f }, -35, 16, 33);//RAMP FENCE
-
-	App->physics->AddFence({ 2.0f, 3.0f, 60.0f }, -10, 16, 4);//RAMP FENCE UP
-
-	App->physics->AddFence({ 20.0f, 10.0f, 14.0f }, -50, 15, 11, 34, { 1,0,0 });//TOP RAMP UP
+	App->physics->AddFence({ 20.0f, 10.0f, 14.0f }, -50, 15, -7, 34, { 1,0,0 });//TOP RAMP UP
 
 	App->physics->AddFence({ 14.0f, 10.0f, 20.0f }, 31, 15, -50, 34, { 0,0,-1 });//TOP RAMP DOWN
+	//-------------
 
 
-	//App->physics->AddFence({ 9.0f, 2.0f, 2.0f }, 0, 15, 0, 45, { 1,0,0 });//SMALL RAMP
-
-	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 0, 45, { 1,0,0 });//SMALL RAMP
-	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 5, 45, { 1,0,0 });//TSMALL RAMP
-	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 10, 45, { 1,0,0 });//SMALL RAMP
-	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 15, 45, { 1,0,0 });//SMALL RAMP
-
-
-	App->physics->AddInvisibleWall({ 28.0f, 10.0f, 2.0f }, -23, 23, 33);//BOTTOM RAMP WALL
+	App->physics->AddInvisibleWall({ 28.0f, 10.0f, 2.0f }, -23, 23, 26);//BOTTOM RAMP WALL
 
 	App->physics->AddInvisibleWall({ 68.0f, 8.0f, 0.10f }, -6, 23, -40);//TOP WALL 
 
+	App->physics->AddInvisibleWall({ 2.0f, 8.0f, 82.0F }, 4, 20, 2);//MIDDLE WALL 
+
 	//ball
 	ball.radius = 3;
-	ball.SetPos(10, 20, -20);
+	ball.SetPos(-30, 20, -20);
 	ball.color = Gray;
 	ballbody = App->physics->AddBody(ball);
 
 	stick.size = { 0.1f,20.0f,0.1f };
 	stick.color = Blue;
-	stick.SetPos(10, 30, -30);
+	stick.SetPos(-30, 30, -30);
 
 	stickbody = App->physics->AddBody(stick);
 
 	roof.size = { 5.0f,1.0f,5.0f };
 	roof.color = Blue;
-	roof.SetPos(10, 50, -30);
+	roof.SetPos(-30, 50, -30);
 	roofbody = App->physics->AddBody(roof, 0);
 
-	App->physics->AddConstraintHinge(*roofbody, *stickbody, { 0,-0.5f,0 }, { 0,10,0 }, { 1,0,0 }, { 1,0,0 });
-	App->physics->AddConstraintHinge(*stickbody, *ballbody, { 0,-10,0 }, { 0,3,0 }, { 0,1,0 }, { 0,1,0 });
+	App->physics->AddConstraintHinge(*roofbody, *stickbody, { 0,-1.0f,0 }, { 0,10,0 }, { 0,0,1 }, { 0,0,1 });
+	App->physics->AddConstraintHinge(*stickbody, *ballbody, { 0,-10,0 }, { 0,3,0 }, { 0,0,1 }, {0,0,1 });
 }

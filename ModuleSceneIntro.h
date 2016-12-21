@@ -49,7 +49,7 @@ public:
 	int current_time;
 
 	uint lap;
-	uint finish;
+	uint victory;
 	uint respawn;
 	uint start;
 	int checkpoint_id=0;
