@@ -21,11 +21,11 @@ PhysVehicle3D::~PhysVehicle3D()
 }
 
 // ----------------------------------------------------------------------------
-void PhysVehicle3D::Render()
+void PhysVehicle3D::Render(int playernum)
 {
 	Cylinder wheel;
 
-	wheel.color = Blue;
+	wheel.color = Black;
 
 	for(int i = 0; i < vehicle->getNumWheels(); ++i)
 	{
@@ -39,6 +39,12 @@ void PhysVehicle3D::Render()
 	}
 
 	Cube chassis(info.chassis_size.x, info.chassis_size.y, info.chassis_size.z);
+	if (playernum==1){
+		chassis.color = Azure;
+	}
+	if (playernum == 2) {
+		chassis.color = Orange;
+	}
 	vehicle->getChassisWorldTransform().getOpenGLMatrix(&chassis.transform);
 	btQuaternion q = vehicle->getChassisWorldTransform().getRotation();
 	btVector3 offset(info.chassis_offset.x, info.chassis_offset.y, info.chassis_offset.z);

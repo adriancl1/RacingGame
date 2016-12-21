@@ -23,7 +23,8 @@ public:
 	ModuleRenderer3D* renderer3D;
 	ModuleCamera3D* camera;
 	ModulePhysics3D* physics;
-	ModulePlayer* player;
+	ModulePlayer* player1;
+	ModulePlayer* player2;
 
 private:
 

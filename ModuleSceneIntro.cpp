@@ -66,26 +66,27 @@ bool ModuleSceneIntro::Start()
 	Cube floor;
 	floor.size = vec3(120.0f, 10.0f, 120.0f);
 	floor.SetPos(0, 10, 0);
-	floor.color = Red;
+	floor.color = Brown;
 
 	cubes.add(floor);
 	App->physics->AddBody(floor, 0);
 
 	Cylinder cyl1;
 	cyl1.SetRotation(90, { 0,0,1 });
-	cyl1.radius = 2;
-	cyl1.height = 3;
+	cyl1.radius = 1.2f;
+	cyl1.height = 0.7f;
 	cyl1.SetPos(-10, 18, 48);
 	cylinders.add(cyl1);
-	App->physics->AddBody(cyl1);
+	cylinderBodies.add(App->physics->AddBody(cyl1, 200.0f));
 
 	Cylinder cyl2;
 	cyl2.SetRotation(90, { 0,0,1 });
-	cyl2.radius = 2;
-	cyl2.height = 3;
+	cyl2.radius = 1.2f;
+	cyl2.height = 0.7f;
 	cyl2.SetPos(-10, 21, 48);
+	cyl2.color = DarkRed;
 	cylinders.add(cyl2);
-	App->physics->AddBody(cyl2);
+	cylinderBodies.add(App->physics->AddBody(cyl2, 200.0f));
 	
 
 
@@ -144,12 +145,15 @@ bool ModuleSceneIntro::CleanUp()
 update_status ModuleSceneIntro::Update(float dt)
 {
 
-
+	cubes.getFirst();
 	for (p2List_item<Cube>* cubelist = cubes.getFirst(); cubelist; cubelist = cubelist->next) {
 		cubelist->data.Render();
 	}
+	p2List_item<PhysBody3D*>* cylinderbody = cylinderBodies.getFirst();
 	for (p2List_item<Cylinder>* cylinderlist = cylinders.getFirst(); cylinderlist; cylinderlist = cylinderlist->next) {
+		cylinderbody->data->GetTransform(&(cylinderlist->data.transform));
 		cylinderlist->data.Render();
+		cylinderbody = cylinderbody->next;
 	}
 	return UPDATE_CONTINUE;
 }

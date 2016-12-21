@@ -123,7 +123,7 @@ update_status ModulePhysics3D::Update(float dt)
 		p2List_item<PhysVehicle3D*>* item = vehicles.getFirst();
 		while(item)
 		{
-			item->data->Render();
+			//item->data->Render();
 			item = item->next;
 		}
 
@@ -367,7 +367,7 @@ void ModulePhysics3D::AddFence(vec3 size, float posx, float posy, float posz, fl
 		fence.SetRotation(angle, rot);
 	}
 
-	fence.color = Green;
+	fence.color = Brown2;
 	App->scene_intro->cubes.add(fence);
 	App->physics->AddBody(fence, 0);
 }

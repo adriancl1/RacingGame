@@ -5,14 +5,14 @@
 
 struct PhysVehicle3D;
 
-#define MAX_ACCELERATION 1000.0f
+#define MAX_ACCELERATION 4000.0f
 #define TURN_DEGREES 15.0f * DEGTORAD
 #define BRAKE_POWER 1000.0f
 
 class ModulePlayer : public Module
 {
 public:
-	ModulePlayer(Application* app, bool start_enabled = true);
+	ModulePlayer(Application* app, int num, bool start_enabled = true);
 	virtual ~ModulePlayer();
 
 	bool Start();
@@ -26,4 +26,5 @@ public:
 	float turn;
 	float acceleration;
 	float brake;
+	int num;
 };
