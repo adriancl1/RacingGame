@@ -125,10 +125,38 @@ bool ModuleSceneIntro::Start()
 
 	App->physics->AddFence({ 14.0f, 10.0f, 20.0f }, 31, 15, -50, 34, { 0,0,-1 });//TOP RAMP DOWN
 
+
+	//App->physics->AddFence({ 9.0f, 2.0f, 2.0f }, 0, 15, 0, 45, { 1,0,0 });//SMALL RAMP
+
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 0, 45, { 1,0,0 });//TOP RAMP DOWN
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 5, 45, { 1,0,0 });//TOP RAMP DOWN
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 10, 45, { 1,0,0 });//TOP RAMP DOWN
+	App->physics->AddFence({ 15.0f, 1.3f, 1.3f }, -3, 15, 15, 45, { 1,0,0 });//TOP RAMP DOWN
+
+
 	App->physics->AddInvisibleWall({ 28.0f, 10.0f, 2.0f }, -23, 23, 33);//BOTTOM RAMP WALL
 
 	App->physics->AddInvisibleWall({ 68.0f, 8.0f, 0.10f }, -6, 23, -40);//TOP WALL 
 
+	//ball
+	ball.radius = 3;
+	ball.SetPos(0, 18, 0);
+	ball.color = Gray;
+	ballbody=App->physics->AddBody(ball);
+
+	stick.size = { 0.1f,10.0f,0.1f };
+	stick.color = Blue;
+	stick.SetPos(0, 18, 10);
+
+	stickbody = App->physics->AddBody(stick);
+
+	roof.size = { 5.0f,1.0f,5.0f };
+	roof.color = Blue;
+	roof.SetPos(0, 50, 10);
+	roofbody = App->physics->AddBody(roof, 0);
+
+	App->physics->AddConstraintHinge(*roofbody, *stickbody, { 0,-0.5f,0 }, { 0,-5,0 }, { 0,0,1 }, { 0,0,1 });
+	App->physics->AddConstraintP2P(*stickbody, *ballbody, { 0,5,0 }, { 0,3,0 });
 
 	return ret;
 }
@@ -155,6 +183,10 @@ update_status ModuleSceneIntro::Update(float dt)
 		cylinderlist->data.Render();
 		cylinderbody = cylinderbody->next;
 	}
+	ballbody->GetTransform(&(ball.transform));
+	ball.Render();
+	stickbody->GetTransform(&(stick.transform));
+	stick.Render();
 	return UPDATE_CONTINUE;
 }
 

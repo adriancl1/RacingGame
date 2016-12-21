@@ -21,7 +21,7 @@ bool ModulePlayer::Start()
 	VehicleInfo car;
 
 	// Car properties ----------------------------------------
-	car.chassis_size.Set(2, 2, 4);
+	car.chassis_size.Set(2, 1, 4);
 	car.chassis_offset.Set(0, 1.5, 0);
 	car.mass = 1000.0f;
 	car.suspensionStiffness = 15.88f;
@@ -97,7 +97,12 @@ bool ModulePlayer::Start()
 	car.wheels[3].steering = false;
 
 	vehicle = App->physics->AddVehicle(car);
-	vehicle->SetPos(0, 12, 48);
+	if (num == 1) {
+		vehicle->SetPos(0, 12, 48);
+	}
+	else if (num == 2) {
+		vehicle->SetPos(2, 12, 48);
+	}
 	vehicle->collision_listeners.add(this);
 	vehicle->last_checkpoint = App->scene_intro->checkpoints[0];
 

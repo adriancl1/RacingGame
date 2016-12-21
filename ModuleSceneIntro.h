@@ -35,6 +35,12 @@ public:
 	p2List<Cube> invisibleWalls;
 	p2List<Cylinder> cylinders;
 	p2List<PhysBody3D*> cylinderBodies;
+	Sphere ball;
+	PhysBody3D* ballbody;
+	Cube stick;
+	PhysBody3D* stickbody;
+	Cube roof;
+	PhysBody3D* roofbody;
 
 
 	int checkpoint_id=0;
