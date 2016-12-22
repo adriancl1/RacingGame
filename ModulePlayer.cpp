@@ -106,15 +106,15 @@ bool ModulePlayer::Start()
 		vehicle->SetPos(0, 12, 45);
 	}
 	else if (num == 2) {
-		vehicle->SetPos(0, 12, 49);
+		vehicle->SetPos(0, 0, 0);
 		vehicle->SetAsSensor(true);
 	}
 	if (num == 3) {
-		vehicle->SetPos(0, 12, 53);
+		vehicle->SetPos(0, 0, 0);
 		vehicle->SetAsSensor(true);
 	}
 	else if (num == 4) {
-		vehicle->SetPos(0, 12, 57);
+		vehicle->SetPos(0, 0, 0);
 		vehicle->SetAsSensor(true);
 	}
 	vehicle->collision_listeners.add(this);

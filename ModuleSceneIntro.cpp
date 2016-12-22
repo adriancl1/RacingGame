@@ -61,6 +61,7 @@ bool ModuleSceneIntro::CleanUp()
 update_status ModuleSceneIntro::Update(float dt)
 {
 	current_time = SDL_GetTicks();
+
 	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
 		RestartStage();
 	}
@@ -102,6 +103,7 @@ update_status ModuleSceneIntro::Update(float dt)
 	roof2.Render();
 
 	sky.Render();
+	line.Render();
 
 
 	char title[80];
@@ -137,12 +139,12 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			{
 				((PhysVehicle3D*)body2)->last_checkpoint = body1;
 			}
-			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps<1) {
+			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps<2) {
 				((PhysVehicle3D*)body2)->last_checkpoint = body1;
 				((PhysVehicle3D*)body2)->laps++;
 				App->audio->PlayFx(lap);
 			}
-			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps == 1) {
+			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps == 2) {
 				((PhysVehicle3D*)body2)->laps++;
 				if (((PhysVehicle3D*)body2)->playernum == 1) {
 					winner = "P1";
@@ -172,11 +174,14 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 
 void ModuleSceneIntro::CreateStage() {
 
-	sky.color = Green;
+	sky.color = Black;
 	sky.normal = { 0,0,1 };
 	sky.SetPos(0, 0, -100);
-	sky.SetRotation(90, { 1,0,0 });
+	sky.SetRotation(-90, { 1,0,0 });
 
+	line.SetPos(0, 15, 52);
+	line.size = { 1.0f, 0.1f, 16.0f };
+	line.color = White;
 
 	Cube death;
 	death.size = vec3(1000.0f, 0.1f, 1000.0f);

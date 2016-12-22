@@ -27,6 +27,7 @@ public:
 
 public:
 	Plane sky;
+	Cube line;
 
 	p2List<Cube> cubes;
 	p2List<Cube> invisibleWalls;
