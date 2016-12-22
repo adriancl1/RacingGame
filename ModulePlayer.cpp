@@ -20,6 +20,7 @@ ModulePlayer::~ModulePlayer()
 bool ModulePlayer::Start()
 {
 	LOG("Loading player");
+	start_time = SDL_GetTicks() + 2000;
 
 	VehicleInfo car;
 
@@ -138,8 +139,11 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
 {
+	current_time = SDL_GetTicks();
+
 	turn = acceleration = brake = 0.0f;
-	if (active) {
+
+	if (active && current_time>start_time) {
 		if (num == 1) {
 			if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 			{

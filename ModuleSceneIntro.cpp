@@ -61,7 +61,9 @@ bool ModuleSceneIntro::CleanUp()
 update_status ModuleSceneIntro::Update(float dt)
 {
 	current_time = SDL_GetTicks();
-
+	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
+		RestartStage();
+	}
 	//PLAY A RANDOM THEME EVERY 9 SECONDS 
 	if (current_time > music_time) {
 		int random_theme = rand() % 5;
@@ -101,6 +103,7 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	sky.Render();
 
+
 	char title[80];
 	if (App->player2->active == true && App->player3->active == true && App->player4->active == true) {
 		sprintf_s(title, "P1 Laps: %i P2 Laps: %i P3 Laps: %i P4 Laps: %i Last Winner: %s", App->player1->vehicle->laps, App->player2->vehicle->laps, App->player3->vehicle->laps, App->player4->vehicle->laps, winner);
@@ -134,18 +137,28 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			{
 				((PhysVehicle3D*)body2)->last_checkpoint = body1;
 			}
-			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps<2) {
+			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps<1) {
 				((PhysVehicle3D*)body2)->last_checkpoint = body1;
 				((PhysVehicle3D*)body2)->laps++;
 				App->audio->PlayFx(lap);
 			}
-			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps == 2) {
+			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps == 1) {
 				((PhysVehicle3D*)body2)->laps++;
 				if (((PhysVehicle3D*)body2)->playernum == 1) {
 					winner = "P1";
+					sky.color = Red;
 				}
 				else if (((PhysVehicle3D*)body2)->playernum == 2) {
 					winner = "P2";
+					sky.color = Blue;
+				}
+				else if (((PhysVehicle3D*)body2)->playernum == 3) {
+					winner = "P3";
+					sky.color = Green;
+				}
+				else if (((PhysVehicle3D*)body2)->playernum == 4) {
+					winner = "P4";
+					sky.color = Yellow;
 				}
 				App->audio->PlayFx(victory);
 				RestartStage();
@@ -161,7 +174,8 @@ void ModuleSceneIntro::CreateStage() {
 
 	sky.color = Green;
 	sky.normal = { 0,0,1 };
-	sky.SetPos(0, 0, 300);
+	sky.SetPos(0, 0, -100);
+	sky.SetRotation(90, { 1,0,0 });
 
 
 	Cube death;
@@ -244,6 +258,11 @@ void ModuleSceneIntro::CreateStage() {
 	AddTires(-31, 10, -8);
 	AddTires(-29, 10, -8);
 
+	//FINAL TIRES ----
+	AddTires(40, 10, 10);
+	AddTires(21, 10, 24);
+	AddTires(21, 10, -28);
+	AddTires(37, 10, -20);
 				
 	Cube water;
 	water.size = { 20.0f, 2.0f, 19.0f };
@@ -386,9 +405,28 @@ void ModuleSceneIntro::AddTires(int posx, int posy, int posz) {
 void ModuleSceneIntro::RestartStage() {
 	App->player1->vehicle->last_checkpoint = checkpoints[0];
 	App->player1->vehicle->laps = 0;
+	App->player1->vehicle->Respawn();
 	App->player2->vehicle->last_checkpoint = checkpoints[0];
 	App->player2->vehicle->laps = 0;
-	App->player1->vehicle->SetPos(0, 12, 48);
-	App->player2->vehicle->SetPos(0, 12, 54);
+	App->player2->vehicle->Respawn();
+	App->player3->vehicle->last_checkpoint = checkpoints[0];
+	App->player3->vehicle->laps = 0;
+	App->player3->vehicle->Respawn();
+	App->player4->vehicle->last_checkpoint = checkpoints[0];
+	App->player4->vehicle->laps = 0;
+	App->player4->vehicle->Respawn();
+
+	App->player1->vehicle->SetPos(0, 12, 45);
+	App->player2->vehicle->SetPos(0, 12, 49);
+	
+	App->player3->vehicle->SetPos(0, 12, 53);
+	App->player4->vehicle->SetPos(0, 12, 57);
+
+	int newstart = SDL_GetTicks() + 2000;
+
+	App->player1->start_time = newstart;
+	App->player2->start_time = newstart;
+	App->player3->start_time = newstart;
+	App->player4->start_time = newstart;
 
 }
