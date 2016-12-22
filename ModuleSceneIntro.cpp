@@ -411,21 +411,28 @@ void ModuleSceneIntro::RestartStage() {
 	App->player1->vehicle->last_checkpoint = checkpoints[0];
 	App->player1->vehicle->laps = 0;
 	App->player1->vehicle->Respawn();
-	App->player2->vehicle->last_checkpoint = checkpoints[0];
-	App->player2->vehicle->laps = 0;
-	App->player2->vehicle->Respawn();
-	App->player3->vehicle->last_checkpoint = checkpoints[0];
-	App->player3->vehicle->laps = 0;
-	App->player3->vehicle->Respawn();
-	App->player4->vehicle->last_checkpoint = checkpoints[0];
-	App->player4->vehicle->laps = 0;
-	App->player4->vehicle->Respawn();
-
 	App->player1->vehicle->SetPos(0, 12, 45);
-	App->player2->vehicle->SetPos(0, 12, 49);
+
+	if (App->player2->active == true) {
+		App->player2->vehicle->last_checkpoint = checkpoints[0];
+		App->player2->vehicle->laps = 0;
+		App->player2->vehicle->Respawn();
+		App->player2->vehicle->SetPos(0, 12, 49);
+	}
+	if (App->player3->active == true) {
+		App->player3->vehicle->last_checkpoint = checkpoints[0];
+		App->player3->vehicle->laps = 0;
+		App->player3->vehicle->Respawn();
+		App->player3->vehicle->SetPos(0, 12, 53);
+	}
+	if (App->player4->active == true) {
+		App->player4->vehicle->last_checkpoint = checkpoints[0];
+		App->player4->vehicle->laps = 0;
+		App->player4->vehicle->Respawn();
+		App->player4->vehicle->SetPos(0, 12, 57);
+	}
 	
-	App->player3->vehicle->SetPos(0, 12, 53);
-	App->player4->vehicle->SetPos(0, 12, 57);
+	
 
 	int newstart = SDL_GetTicks() + 2000;
 
