@@ -11,6 +11,8 @@ Application::Application()
 	physics = new ModulePhysics3D(this);
 	player1 = new ModulePlayer(this, 1);
 	player2 = new ModulePlayer(this, 2);
+	player3 = new ModulePlayer(this, 3);
+	player4 = new ModulePlayer(this, 4);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -27,6 +29,8 @@ Application::Application()
 	AddModule(scene_intro);
 	AddModule(player1);
 	AddModule(player2);
+	AddModule(player3);
+	AddModule(player4);
 
 	// Renderer last!
 	AddModule(renderer3D);
@@ -75,6 +79,10 @@ void Application::PrepareUpdate()
 {
 	dt = (float)ms_timer.Read() / 1000.0f;
 	ms_timer.Start();
+
+	if (input->GetKey(SDL_SCANCODE_2) == KEY_DOWN && player2 == nullptr) {
+
+	}
 }
 
 // ---------------------------------------------

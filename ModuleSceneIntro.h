@@ -4,8 +4,7 @@
 #include "Globals.h"
 #include "Primitive.h"
 
-#define MAX_SNAKE 2
-#define CHECKPOINT_NUM 5
+#define CHECKPOINT_NUM 7
 
 struct PhysBody3D;
 struct PhysMotor3D;
@@ -27,13 +26,7 @@ public:
 	void RestartStage();
 
 public:
-	/*
-	PhysBody3D* pb_snake[MAX_SNAKE];
-	Sphere s_snake[MAX_SNAKE];
-
-	PhysBody3D* pb_snake2[MAX_SNAKE];
-	Sphere s_snake2[MAX_SNAKE];
-	*/
+	Plane sky;
 
 	p2List<Cube> cubes;
 	p2List<Cube> invisibleWalls;
@@ -46,11 +39,19 @@ public:
 	Cube roof;
 	PhysBody3D* roofbody;
 
+	Sphere ball2;
+	PhysBody3D* ballbody2;
+	Cube stick2;
+	PhysBody3D* stickbody2;
+	Cube roof2;
+	PhysBody3D* roofbody2;
+
 	const char* themes[6];
 	int music_time;
 	int current_time;
 	int ball_time;
 	int ballforce=25;
+	int ball2force = -25;
 	char* winner;
 
 	uint lap;

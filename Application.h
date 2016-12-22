@@ -25,6 +25,8 @@ public:
 	ModulePhysics3D* physics;
 	ModulePlayer* player1;
 	ModulePlayer* player2;
+	ModulePlayer* player3;
+	ModulePlayer* player4;
 
 private:
 

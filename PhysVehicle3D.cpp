@@ -40,10 +40,16 @@ void PhysVehicle3D::Render()
 
 	Cube chassis(info.chassis_size.x, info.chassis_size.y, info.chassis_size.z);
 	if (playernum==1){
-		chassis.color = Azure;
+		chassis.color = Red;
 	}
 	if (playernum == 2) {
-		chassis.color = Orange;
+		chassis.color = Blue;
+	}
+	if (playernum == 3) {
+		chassis.color = Green;
+	}
+	if (playernum == 4) {
+		chassis.color = Yellow;
 	}
 	vehicle->getChassisWorldTransform().getOpenGLMatrix(&chassis.transform);
 	btQuaternion q = vehicle->getChassisWorldTransform().getRotation();
@@ -55,7 +61,7 @@ void PhysVehicle3D::Render()
 	chassis.transform.M[14] += offset.getZ();
 
 	//windows
-	Cube window(info.chassis_size.x*1.2, info.chassis_size.y*.3, info.chassis_size.z);
+	Cube window(info.chassis_size.x*1.02, info.chassis_size.y*.3, info.chassis_size.z);
 
 	vehicle->getChassisWorldTransform().getOpenGLMatrix(&window.transform);
 
@@ -118,12 +124,16 @@ float PhysVehicle3D::GetKmh() const
 void PhysVehicle3D::Respawn() {
 	mat4x4 newpos;
 	last_checkpoint->GetTransform(&newpos);
-	if (last_checkpoint->CheckPointId() != 3) {
+	if (last_checkpoint->CheckPointId() != 3 && last_checkpoint->CheckPointId() !=4 && last_checkpoint->CheckPointId()!=5 && last_checkpoint->CheckPointId() != 6) {
 		newpos.rotate(-90, { 0,1,0 });
 	}
-	else {
+	if (last_checkpoint->CheckPointId() == 3 || last_checkpoint->CheckPointId() == 5) {
+		newpos.rotate(180, { 0,1,0 });
+	}
+	if (last_checkpoint->CheckPointId() == 4) {
 		newpos.rotate(90, { 0,1,0 });
 	}
+
 
 	SetTransform(&newpos);
 

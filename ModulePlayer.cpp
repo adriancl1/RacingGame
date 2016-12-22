@@ -8,6 +8,9 @@
 ModulePlayer::ModulePlayer(Application* app, int num, bool start_enabled) : Module(app, start_enabled), num(num), vehicle(NULL)
 {
 	turn = acceleration = brake = 0.0f;
+	if (num == 1) {
+		active = true;
+	}
 }
 
 ModulePlayer::~ModulePlayer()
@@ -23,7 +26,7 @@ bool ModulePlayer::Start()
 	// Car properties ----------------------------------------
 	car.chassis_size.Set(2, 2, 4);
 	car.chassis_offset.Set(0, 1.5, 0);
-	car.windows_offset.Set(0, 1.7, 0.2);
+	car.windows_offset.Set(0, 1.7, 0.02);
 	car.mass = 1000.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
@@ -99,10 +102,19 @@ bool ModulePlayer::Start()
 
 	vehicle = App->physics->AddVehicle(car, num);
 	if (num == 1) {
-		vehicle->SetPos(0, 12, 48);
+		vehicle->SetPos(0, 12, 45);
 	}
 	else if (num == 2) {
-		vehicle->SetPos(0, 12, 54);
+		vehicle->SetPos(0, 12, 49);
+		vehicle->SetAsSensor(true);
+	}
+	if (num == 3) {
+		vehicle->SetPos(0, 12, 53);
+		vehicle->SetAsSensor(true);
+	}
+	else if (num == 4) {
+		vehicle->SetPos(0, 12, 57);
+		vehicle->SetAsSensor(true);
 	}
 	vehicle->collision_listeners.add(this);
 	mat4x4 initial;
@@ -127,79 +139,175 @@ bool ModulePlayer::CleanUp()
 update_status ModulePlayer::Update(float dt)
 {
 	turn = acceleration = brake = 0.0f;
-	if (num == 1) {
-		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
-		{
-			if (vehicle->GetKmh() >= -1) {
-				acceleration = MAX_ACCELERATION;
+	if (active) {
+		if (num == 1) {
+			if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
+			{
+				if (vehicle->GetKmh() >= -1) {
+					acceleration = MAX_ACCELERATION;
+				}
+				else {
+					brake = BRAKE_POWER;
+				}
 			}
-			else {
-				brake = BRAKE_POWER;
+
+			if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+			{
+				if (turn < TURN_DEGREES)
+					turn += TURN_DEGREES;
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+			{
+				if (turn > -TURN_DEGREES)
+					turn -= TURN_DEGREES;
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
+			{
+				if (vehicle->GetKmh() <= 0) {
+					acceleration = -MAX_ACCELERATION;
+				}
+				else {
+					brake = BRAKE_POWER;
+				}
+			}
+			if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_DOWN) {
+				vehicle->Respawn();
 			}
 		}
 
-		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-		{
-			if (turn < TURN_DEGREES)
-				turn += TURN_DEGREES;
-		}
-
-		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-		{
-			if (turn > -TURN_DEGREES)
-				turn -= TURN_DEGREES;
-		}
-
-		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
-		{
-			if (vehicle->GetKmh() <= 0) {
-				acceleration = -MAX_ACCELERATION;
+		if (num == 2) {
+			if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+			{
+				if (vehicle->GetKmh() >= -1) {
+					acceleration = MAX_ACCELERATION;
+				}
+				else {
+					brake = BRAKE_POWER;
+				}
 			}
-			else {
-				brake = BRAKE_POWER;
+
+			if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+			{
+				if (turn < TURN_DEGREES)
+					turn += TURN_DEGREES;
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+			{
+				if (turn > -TURN_DEGREES)
+					turn -= TURN_DEGREES;
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+			{
+				if (vehicle->GetKmh() <= 0) {
+					acceleration = -MAX_ACCELERATION;
+				}
+				else {
+					brake = BRAKE_POWER;
+				}
+			}
+			if (App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_DOWN) {
+				vehicle->Respawn();
+			}
+		}
+		if (num == 3) {
+			if (App->input->GetKey(SDL_SCANCODE_I) == KEY_REPEAT)
+			{
+				if (vehicle->GetKmh() >= -1) {
+					acceleration = MAX_ACCELERATION;
+				}
+				else {
+					brake = BRAKE_POWER;
+				}
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_J) == KEY_REPEAT)
+			{
+				if (turn < TURN_DEGREES)
+					turn += TURN_DEGREES;
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT)
+			{
+				if (turn > -TURN_DEGREES)
+					turn -= TURN_DEGREES;
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_K) == KEY_REPEAT)
+			{
+				if (vehicle->GetKmh() <= 0) {
+					acceleration = -MAX_ACCELERATION;
+				}
+				else {
+					brake = BRAKE_POWER;
+				}
+			}
+			if (App->input->GetKey(SDL_SCANCODE_U) == KEY_DOWN) {
+				vehicle->Respawn();
+			}
+		}
+		if (num == 4) {
+			if (App->input->GetKey(SDL_SCANCODE_KP_5) == KEY_REPEAT)
+			{
+				if (vehicle->GetKmh() >= -1) {
+					acceleration = MAX_ACCELERATION;
+				}
+				else {
+					brake = BRAKE_POWER;
+				}
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_KP_1) == KEY_REPEAT)
+			{
+				if (turn < TURN_DEGREES)
+					turn += TURN_DEGREES;
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_KP_3) == KEY_REPEAT)
+			{
+				if (turn > -TURN_DEGREES)
+					turn -= TURN_DEGREES;
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_KP_2) == KEY_REPEAT)
+			{
+				if (vehicle->GetKmh() <= 0) {
+					acceleration = -MAX_ACCELERATION;
+				}
+				else {
+					brake = BRAKE_POWER;
+				}
+			}
+			if (App->input->GetKey(SDL_SCANCODE_KP_4) == KEY_DOWN) {
+				vehicle->Respawn();
 			}
 		}
 	}
 
-	if (num == 2) {
-		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-		{
-			if (vehicle->GetKmh() >= -1) {
-				acceleration = MAX_ACCELERATION;
-			}
-			else {
-				brake = BRAKE_POWER;
-			}
-		}
-
-		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-		{
-			if (turn < TURN_DEGREES)
-				turn += TURN_DEGREES;
-		}
-
-		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		{
-			if (turn > -TURN_DEGREES)
-				turn -= TURN_DEGREES;
-		}
-
-		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-		{
-			if (vehicle->GetKmh() <= 0) {
-				acceleration = -MAX_ACCELERATION;
-			}
-			else {
-				brake = BRAKE_POWER;
-			}
-		}
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN && num == 2 && active == false) {
+		active = true;
+		vehicle->SetAsSensor(false);
+		vehicle->SetPos(0, 12, 49);
 	}
-
+	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN && num == 3 && active == false && App->player2->active==true) {
+		active = true;
+		vehicle->SetAsSensor(false);
+		vehicle->SetPos(0, 12, 53);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_4) == KEY_DOWN && num == 4 && active == false && App->player3->active == true) {
+		active = true;
+		vehicle->SetAsSensor(false);
+		vehicle->SetPos(0, 12, 57);
+	}
 	vehicle->ApplyEngineForce(acceleration);
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
-
-	vehicle->Render();
+	if (active) {
+		vehicle->Render();
+	}
 
 
 	return UPDATE_CONTINUE;

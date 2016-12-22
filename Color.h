@@ -36,3 +36,4 @@ extern Color Azure;
 extern Color Orange;
 extern Color Gray;
 extern Color DarkRed;
+extern Color Yellow;

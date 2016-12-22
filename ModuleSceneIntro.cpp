@@ -62,10 +62,6 @@ update_status ModuleSceneIntro::Update(float dt)
 {
 	current_time = SDL_GetTicks();
 
-	if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
-		ballbody->Push(0, 0, 50000);
-	}
-
 	//PLAY A RANDOM THEME EVERY 9 SECONDS 
 	if (current_time > music_time) {
 		int random_theme = rand() % 5;
@@ -85,7 +81,9 @@ update_status ModuleSceneIntro::Update(float dt)
 	if (current_time > ball_time) {
 		ball_time = SDL_GetTicks() + 3000;
 		ballforce = -ballforce;
+		ball2force = -ball2force;
 		ballbody->GetRigidBody()->setLinearVelocity(btVector3(0, 0, ballforce));
+		ballbody2->GetRigidBody()->setLinearVelocity(btVector3(0, 0, ball2force));
 	}
 
 
@@ -93,9 +91,29 @@ update_status ModuleSceneIntro::Update(float dt)
 	ball.Render();
 	stickbody->GetTransform(&(stick.transform));
 	stick.Render();
+	roof.Render();
+
+	ballbody2->GetTransform(&(ball2.transform));
+	ball2.Render();
+	stickbody2->GetTransform(&(stick2.transform));
+	stick2.Render();
+	roof2.Render();
+
+	sky.Render();
 
 	char title[80];
-	sprintf_s(title, "P1 Laps: %i P2 Laps: %i Last Winner: %s", App->player1->vehicle->laps, App->player2->vehicle->laps, winner);
+	if (App->player2->active == true && App->player3->active == true && App->player4->active == true) {
+		sprintf_s(title, "P1 Laps: %i P2 Laps: %i P3 Laps: %i P4 Laps: %i Last Winner: %s", App->player1->vehicle->laps, App->player2->vehicle->laps, App->player3->vehicle->laps, App->player4->vehicle->laps, winner);
+	}
+	else if (App->player2->active == true && App->player3->active == true ) {
+		sprintf_s(title, "P1 Laps: %i P2 Laps: %i P3 Laps: %i Last Winner: %s", App->player1->vehicle->laps, App->player2->vehicle->laps, App->player3->vehicle->laps, winner);
+	}
+	else if (App->player2->active == true) {
+		sprintf_s(title, "P1 Laps: %i P2 Laps: %i Last Winner: %s", App->player1->vehicle->laps, App->player2->vehicle->laps, winner);
+	}
+	else {
+		sprintf_s(title, "P1 Laps: %i Last Winner: %s", App->player1->vehicle->laps, winner);
+	}
 	App->window->SetTitle(title);
 
 	return UPDATE_CONTINUE;
@@ -140,10 +158,16 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 }
 
 void ModuleSceneIntro::CreateStage() {
+
+	sky.color = Green;
+	sky.normal = { 0,0,1 };
+	sky.SetPos(0, 0, 300);
+
+
 	Cube death;
 	death.size = vec3(1000.0f, 0.1f, 1000.0f);
 	death.SetPos(0, 8, 0);
-	death.color = Green;
+	death.color = Red;
 	cubes.add(death);
 	deathsensor = App->physics->AddBody(death, 0);
 	deathsensor->SetAsSensor(true);
@@ -158,29 +182,43 @@ void ModuleSceneIntro::CreateStage() {
 
 	Cube secondchk;
 	secondchk.size = vec3(1.0f, 5.0f, 14.0f);
-	secondchk.SetPos(-45, 18, 53);
+	secondchk.SetPos(-40, 18, 53);
 	checkpoints[checkpoint_id] = App->physics->AddBody(secondchk, 0);
 	checkpoints[checkpoint_id]->SetAsCheckpoint(true, checkpoint_id, { -45,12,48 });
 	checkpoints[checkpoint_id++]->collision_listeners.add(this);
 
 	Cube thirdchk;
-	thirdchk.size = vec3(1.0f, 5.0f, 14.0f);
-	thirdchk.SetPos(-40, 18, 25);
+	thirdchk.size = vec3(1.0f, 5.0f, 17.0f);
+	thirdchk.SetPos(-10, 18, -31);
 	checkpoints[checkpoint_id] = App->physics->AddBody(thirdchk, 0);
 	checkpoints[checkpoint_id]->SetAsCheckpoint(true, checkpoint_id, { -40,12,25 });
 	checkpoints[checkpoint_id++]->collision_listeners.add(this);
 
 	Cube fourthchk;
-	fourthchk.size = vec3(1.0f, 5.0f, 14.0f);
-	fourthchk.SetPos(0, 18, -50);
+	fourthchk.size = vec3(19.0f, 5.0f, 1.0f);
+	fourthchk.SetPos(-51, 25, -15);
 	checkpoints[checkpoint_id] = App->physics->AddBody(fourthchk, 0);
-	checkpoints[checkpoint_id]->SetAsCheckpoint(true, checkpoint_id, { 0,12,50 });
+	checkpoints[checkpoint_id]->SetAsCheckpoint(true, checkpoint_id, { -40,12,25 });
 	checkpoints[checkpoint_id++]->collision_listeners.add(this);
 
 	Cube fifthchk;
-	fifthchk.size = vec3(1.0f, 5.0f, 14.0f);
-	fifthchk.SetPos(0, 18, 0);
+	fifthchk.size = vec3(1.0f, 5.0f, 19.0f);
+	fifthchk.SetPos(23, 25, -50);
 	checkpoints[checkpoint_id] = App->physics->AddBody(fifthchk, 0);
+	checkpoints[checkpoint_id]->SetAsCheckpoint(true, checkpoint_id, { 0,12,0 });
+	checkpoints[checkpoint_id++]->collision_listeners.add(this);
+
+	Cube sixthchk;
+	sixthchk.size = vec3(19.0f, 5.0f, 1.0f);
+	sixthchk.SetPos(30, 18, 20);
+	checkpoints[checkpoint_id] = App->physics->AddBody(sixthchk, 0);
+	checkpoints[checkpoint_id]->SetAsCheckpoint(true, checkpoint_id, { -40,12,25 });
+	checkpoints[checkpoint_id++]->collision_listeners.add(this);
+
+	Cube seventhchk;
+	seventhchk.size = vec3(18.0f, 5.0f, 1.0f);
+	seventhchk.SetPos(50, 18, 40);
+	checkpoints[checkpoint_id] = App->physics->AddBody(seventhchk, 0);
 	checkpoints[checkpoint_id]->SetAsCheckpoint(true, checkpoint_id, { 0,12,0 });
 	checkpoints[checkpoint_id++]->collision_listeners.add(this);
 
@@ -192,17 +230,21 @@ void ModuleSceneIntro::CreateStage() {
 	cubes.add(floor);
 	App->physics->AddBody(floor, 0);
 
+	//UPPER TIRES ----
+	AddTires(-46, 20, -54);
+	AddTires(-54, 20, -45);
+	AddTires(-45, 20, -15);
+	AddTires(-54, 20, -24);
+	AddTires(-46, 20, -35);
 
-	AddTires(-10, 20, -45);
+	//DOWN TIRES ----
+	AddTires(-37, 10, -8);
+	AddTires(-35, 10, -8);
+	AddTires(-33, 10, -8);
+	AddTires(-31, 10, -8);
+	AddTires(-29, 10, -8);
 
-	AddTires(-16, 20, -54);
-
-	AddTires(-22, 20, -45);
-
-	AddTires(-28, 20, -54);
-
-	AddTires(-34, 20, -45);
-
+				
 	Cube water;
 	water.size = { 20.0f, 2.0f, 19.0f };
 	water.color = Azure;
@@ -216,7 +258,7 @@ void ModuleSceneIntro::CreateStage() {
 
 	App->physics->AddFence({ 10.0f, 5.0f, 17.0f }, -23, 17, 35);//RAMP CENTER
 
-	App->physics->AddFence({ 10.0f, 7.0f, 17.0f }, -15, 14, 35, -34, { 0,0,1 });//RAMP RIGHT
+	App->physics->AddFence({ 10.0f, 7.0f, 17.0f }, -15, 14, 35, -29, { 0,0,1 });//RAMP RIGHT
 
 	App->physics->AddFence({ 80.0f, 3.0f, 2.0f }, 0, 16, 43); // BOTTOM 
 
@@ -267,27 +309,51 @@ void ModuleSceneIntro::CreateStage() {
 
 	//ball
 	ball.radius = 3;
-	ball.SetPos(-30, 20, -40);
+	ball.SetPos(-30, 20, -50);
 	ball.color = Gray;
-	ballbody = App->physics->AddBody(ball, 5000);
+	ballbody = App->physics->AddBody(ball, 25000);
 	ballbody->SetFriction(0);
 	ballbody->GetRigidBody()->setLinearVelocity(btVector3(0, 0, ballforce));
 
 	stick.size = { 0.1f,20.0f,0.1f };
-	stick.color = Blue;
-	stick.SetPos(-30, 30, -40);
+	stick.color = Gray;
+	stick.SetPos(-30, 30, -50);
 	stick.SetRotation(45, { 0,1,0 });
-	stickbody = App->physics->AddBody(stick,5000);
+	stickbody = App->physics->AddBody(stick,25000);
 	
 	stickbody->SetFriction(0);
 
 	roof.size = { 5.0f,1.0f,5.0f };
-	roof.color = Blue;
-	roof.SetPos(-30, 50, -40);
+	roof.color = Gray;
+	roof.SetPos(-30, 50, -50);
 	roofbody = App->physics->AddBody(roof, 0);
 
 	App->physics->AddConstraintHinge(*roofbody, *stickbody, { 0,-1.0f,0 }, { 0,10,0 }, { 1,0,0 }, { 1,0,0 });
-	App->physics->AddConstraintHinge(*stickbody, *ballbody, { 0,-10,0 }, { 0,3,0 }, { 0,0,1 }, {0,0,1 });
+	App->physics->AddConstraintHinge(*stickbody, *ballbody, { 0,-10,0 }, { 0,3,0 }, { 0,1,0 }, {0,1,0 });
+
+	//BALL 2
+	ball2.radius = 3;
+	ball2.SetPos(-15, 20, -50);
+	ball2.color = Gray;
+	ballbody2 = App->physics->AddBody(ball2, 25000);
+	ballbody2->SetFriction(0);
+	ballbody2->GetRigidBody()->setLinearVelocity(btVector3(0, 0, ball2force));
+
+	stick2.size = { 0.1f,20.0f,0.1f };
+	stick2.color = Gray;
+	stick2.SetPos(-15, 30, -50);
+	stick2.SetRotation(45, { 0,1,0 });
+	stickbody2 = App->physics->AddBody(stick2, 25000);
+
+	stickbody2->SetFriction(0);
+
+	roof2.size = { 5.0f,1.0f,5.0f };
+	roof2.color = Gray;
+	roof2.SetPos(-15, 50, -50);
+	roofbody2 = App->physics->AddBody(roof2, 0);
+
+	App->physics->AddConstraintHinge(*roofbody2, *stickbody2, { 0,-1.0f,0 }, { 0,10,0 }, { 1,0,0 }, { 1,0,0 });
+	App->physics->AddConstraintHinge(*stickbody2, *ballbody2, { 0,-10,0 }, { 0,3,0 }, { 0,1,0 }, { 0,1,0 });
 }
 
 void ModuleSceneIntro::AddTires(int posx, int posy, int posz) {

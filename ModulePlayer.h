@@ -27,4 +27,5 @@ public:
 	float acceleration;
 	float brake;
 	int num;
+	bool active = false;
 };
