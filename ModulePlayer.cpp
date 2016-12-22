@@ -102,7 +102,7 @@ bool ModulePlayer::Start()
 		vehicle->SetPos(0, 12, 48);
 	}
 	else if (num == 2) {
-		vehicle->SetPos(2, 12, 48);
+		vehicle->SetPos(0, 12, 54);
 	}
 	vehicle->collision_listeners.add(this);
 	mat4x4 initial;
@@ -130,7 +130,12 @@ update_status ModulePlayer::Update(float dt)
 	if (num == 1) {
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 		{
-			acceleration = MAX_ACCELERATION;
+			if (vehicle->GetKmh() >= -1) {
+				acceleration = MAX_ACCELERATION;
+			}
+			else {
+				brake = BRAKE_POWER;
+			}
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
@@ -159,7 +164,12 @@ update_status ModulePlayer::Update(float dt)
 	if (num == 2) {
 		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 		{
-			acceleration = MAX_ACCELERATION;
+			if (vehicle->GetKmh() >= -1) {
+				acceleration = MAX_ACCELERATION;
+			}
+			else {
+				brake = BRAKE_POWER;
+			}
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
@@ -196,24 +206,7 @@ update_status ModulePlayer::Update(float dt)
 }
 
 void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
-	/*if (!body2->IsCheckpoint() && body2->IsSensor()) {
-		vec3 newpos = ((PhysVehicle3D*)body1)->last_checkpoint->CheckPointPos();
-		body1->SetPos(newpos.x, newpos.y, newpos.z);
-		LOG("CHECK");
-	}
-	if (body2->IsCheckpoint() && body2 != ((PhysVehicle3D*)body1)->last_checkpoint) {
-		int nextid = ((PhysVehicle3D*)body2)->last_checkpoint->CheckPointId() + 1;
-		if (body2->CheckPointId() == nextid)
-		{
-			((PhysVehicle3D*)body1)->last_checkpoint = body2;
-		}
-		else if (body2->CheckPointId() == 0 && nextid == CHECKPOINT_NUM) {
-			((PhysVehicle3D*)body1)->last_checkpoint = body2;
-		}
-	}
-	if (body1->IsCheckpoint()) {
-		LOG("CHECK2");
-	}*/
+	
 }
 
 

@@ -112,6 +112,6 @@ int PhysBody3D::CheckPointId()const {
 	else return 0;
 }
 
-btRigidBody* PhysBody3D::GetRigidBody()const {
+btRigidBody* PhysBody3D::GetRigidBody() {
 	return body;
 }

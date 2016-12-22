@@ -21,8 +21,10 @@ public:
 	bool CleanUp();
 
 	void CreateStage();
+	void AddTires(int posx, int posy, int posz);
 
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
+	void RestartStage();
 
 public:
 	/*
@@ -47,6 +49,7 @@ public:
 	const char* themes[6];
 	int music_time;
 	int current_time;
+	char* winner;
 
 	uint lap;
 	uint victory;

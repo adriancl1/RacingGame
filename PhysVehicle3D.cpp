@@ -118,8 +118,15 @@ float PhysVehicle3D::GetKmh() const
 void PhysVehicle3D::Respawn() {
 	mat4x4 newpos;
 	last_checkpoint->GetTransform(&newpos);
-	newpos.rotate(-90, { 0,1,0 });
+	if (last_checkpoint->CheckPointId() != 3) {
+		newpos.rotate(-90, { 0,1,0 });
+	}
+	else {
+		newpos.rotate(90, { 0,1,0 });
+	}
+
 	SetTransform(&newpos);
+
 	GetRigidBody()->setAngularVelocity(btVector3(0, 0, 0));
 	GetRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
 

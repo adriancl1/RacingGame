@@ -34,6 +34,8 @@ bool ModuleSceneIntro::Start()
 	respawn = App->audio->LoadFx("audio/RESPAWN.wav");
 	victory = App->audio->LoadFx("audio/FINISH.wav");
 
+
+	winner = "";
 	App->audio->PlayMusic(themes[0]);
 	music_time = SDL_GetTicks() + 9000;
 	srand(time(NULL));
@@ -56,7 +58,7 @@ update_status ModuleSceneIntro::Update(float dt)
 	current_time = SDL_GetTicks();
 
 	if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
-		ballbody->Push(0, 0, 100);
+		ballbody->Push(0, 0, 50000);
 	}
 
 	//PLAY A RANDOM THEME EVERY 9 SECONDS 
@@ -82,7 +84,7 @@ update_status ModuleSceneIntro::Update(float dt)
 	stick.Render();
 
 	char title[80];
-	sprintf_s(title, "P1 Laps: %i P2 Laps: %i", App->player1->vehicle->laps, App->player2->vehicle->laps);
+	sprintf_s(title, "P1 Laps: %i P2 Laps: %i Last Winner: %s", App->player1->vehicle->laps, App->player2->vehicle->laps, winner);
 	App->window->SetTitle(title);
 
 	return UPDATE_CONTINUE;
@@ -103,13 +105,21 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			{
 				((PhysVehicle3D*)body2)->last_checkpoint = body1;
 			}
-			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps<3) {
+			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps<2) {
 				((PhysVehicle3D*)body2)->last_checkpoint = body1;
 				((PhysVehicle3D*)body2)->laps++;
 				App->audio->PlayFx(lap);
 			}
-			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps == 3) {
+			else if (body1->CheckPointId() == 0 && nextid == CHECKPOINT_NUM && ((PhysVehicle3D*)body2)->laps == 2) {
+				((PhysVehicle3D*)body2)->laps++;
+				if (((PhysVehicle3D*)body2)->playernum == 1) {
+					winner = "P1";
+				}
+				else if (((PhysVehicle3D*)body2)->playernum == 2) {
+					winner = "P2";
+				}
 				App->audio->PlayFx(victory);
+				RestartStage();
 			}
 		}
 		if (body2->IsCheckpoint()) {
@@ -120,8 +130,10 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 
 void ModuleSceneIntro::CreateStage() {
 	Cube death;
-	death.size = vec3(180.0f, 0.1f, 180.0f);
+	death.size = vec3(1000.0f, 0.1f, 1000.0f);
 	death.SetPos(0, 8, 0);
+	death.color = Green;
+	cubes.add(death);
 	deathsensor = App->physics->AddBody(death, 0);
 	deathsensor->SetAsSensor(true);
 	deathsensor->collision_listeners.add(this);
@@ -169,23 +181,25 @@ void ModuleSceneIntro::CreateStage() {
 	cubes.add(floor);
 	App->physics->AddBody(floor, 0);
 
-	Cylinder cyl1;
-	cyl1.SetRotation(90, { 0,0,1 });
-	cyl1.radius = 1.2f;
-	cyl1.height = 0.7f;
-	cyl1.SetPos(-10, 18, 48);
-	cylinders.add(cyl1);
-	cylinderBodies.add(App->physics->AddBody(cyl1, 200.0f));
 
-	Cylinder cyl2;
-	cyl2.SetRotation(90, { 0,0,1 });
-	cyl2.radius = 1.2f;
-	cyl2.height = 0.7f;
-	cyl2.SetPos(-10, 21, 48);
-	cyl2.color = DarkRed;
-	cylinders.add(cyl2);
-	cylinderBodies.add(App->physics->AddBody(cyl2, 200.0f));
+	AddTires(-10, 20, -45);
 
+	AddTires(-16, 20, -54);
+
+	AddTires(-22, 20, -45);
+
+	AddTires(-28, 20, -54);
+
+	AddTires(-34, 20, -45);
+
+	Cube water;
+	water.size = { 20.0f, 2.0f, 19.0f };
+	water.color = Azure;
+	water.SetPos(5, 20, -50);
+
+	cubes.add(water);
+	PhysBody3D* waterbody=App->physics->AddBody(water, 0);
+	waterbody->GetRigidBody()->setCollisionFlags(4);
 
 	App->physics->AddFence({ 10.0f, 7.0f, 17.0f }, -31, 14, 35, 29, { 0,0,1 });//RAMP LEFT
 
@@ -206,6 +220,10 @@ void ModuleSceneIntro::CreateStage() {
 	App->physics->AddFence({ 50.0f, 3.0f, 2.0f }, -35, 16, 26);//RAMP FENCE
 
 	App->physics->AddFence({ 2.0f, 3.0f, 50.0f }, -10, 16, 2);//RAMP FENCE UP
+
+	App->physics->AddFence({ 2.0f, 3.0f, 18.0f }, 37, 16, -31);//JUST AFTER TOP RAMP DOWN
+
+	App->physics->AddFence({ 2.0f, 3.0f, 18.0f }, 21, 16, -17);//JUST AFTER TOP RAMP DOWN
 
 	//App->physics->AddFence({ 9.0f, 2.0f, 2.0f }, 0, 15, 0, 45, { 1,0,0 });//SMALL RAMP
 
@@ -232,27 +250,66 @@ void ModuleSceneIntro::CreateStage() {
 
 	App->physics->AddInvisibleWall({ 28.0f, 10.0f, 2.0f }, -23, 23, 26);//BOTTOM RAMP WALL
 
-	App->physics->AddInvisibleWall({ 68.0f, 8.0f, 0.10f }, -6, 23, -40);//TOP WALL 
+	App->physics->AddInvisibleWall({ 40.0f, 8.0f, 0.10f }, 15, 23, -40);//TOP WALL 
 
-	App->physics->AddInvisibleWall({ 2.0f, 8.0f, 82.0F }, 4, 20, 2);//MIDDLE WALL 
+	App->physics->AddInvisibleWall({ 2.0f, 8.0f, 82.0F }, 4, 20, 2);//MIDDLE WALL */
 
 	//ball
 	ball.radius = 3;
-	ball.SetPos(-30, 20, -20);
+	ball.SetPos(-30, 20, -40);
 	ball.color = Gray;
-	ballbody = App->physics->AddBody(ball);
+	ballbody = App->physics->AddBody(ball, 5000);
+	ballbody->GetRigidBody()->setFriction(0);
 
 	stick.size = { 0.1f,20.0f,0.1f };
 	stick.color = Blue;
-	stick.SetPos(-30, 30, -30);
-
-	stickbody = App->physics->AddBody(stick);
+	stick.SetPos(-30, 30, -40);
+	stick.SetRotation(45, { 0,1,0 });
+	stickbody = App->physics->AddBody(stick,5000);
+	stickbody->GetRigidBody()->setFriction(0);
 
 	roof.size = { 5.0f,1.0f,5.0f };
 	roof.color = Blue;
-	roof.SetPos(-30, 50, -30);
+	roof.SetPos(-30, 50, -40);
 	roofbody = App->physics->AddBody(roof, 0);
 
-	App->physics->AddConstraintHinge(*roofbody, *stickbody, { 0,-1.0f,0 }, { 0,10,0 }, { 0,0,1 }, { 0,0,1 });
+	App->physics->AddConstraintHinge(*roofbody, *stickbody, { 0,-1.0f,0 }, { 0,10,0 }, { 1,0,0 }, { 1,0,0 });
 	App->physics->AddConstraintHinge(*stickbody, *ballbody, { 0,-10,0 }, { 0,3,0 }, { 0,0,1 }, {0,0,1 });
+}
+
+void ModuleSceneIntro::AddTires(int posx, int posy, int posz) {
+	Cylinder cyl1;
+	cyl1.SetRotation(90, { 0,0,1 });
+	cyl1.radius = 1.2f;
+	cyl1.height = 0.7f;
+	cyl1.SetPos(posx, posy, posz);
+	cylinders.add(cyl1);
+	cylinderBodies.add(App->physics->AddBody(cyl1, 200.0f));
+
+	Cylinder cyl2;
+	cyl2.SetRotation(90, { 0,0,1 });
+	cyl2.radius = 1.2f;
+	cyl2.height = 0.7f;
+	cyl2.SetPos(posx, posy+3, posz);
+	cyl2.color = DarkRed;
+	cylinders.add(cyl2);
+	cylinderBodies.add(App->physics->AddBody(cyl2, 200.0f));
+
+	Cylinder cyl3;
+	cyl3.SetRotation(90, { 0,0,1 });
+	cyl3.radius = 1.2f;
+	cyl3.height = 0.7f;
+	cyl3.SetPos(posx, posy+6, posz);
+	cylinders.add(cyl3);
+	cylinderBodies.add(App->physics->AddBody(cyl3, 200.0f));
+}
+
+void ModuleSceneIntro::RestartStage() {
+	App->player1->vehicle->last_checkpoint = checkpoints[0];
+	App->player1->vehicle->laps = 0;
+	App->player2->vehicle->last_checkpoint = checkpoints[0];
+	App->player2->vehicle->laps = 0;
+	App->player1->vehicle->SetPos(0, 12, 48);
+	App->player2->vehicle->SetPos(0, 12, 54);
+
 }
