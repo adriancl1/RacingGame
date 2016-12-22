@@ -1,12 +1,7 @@
-*****************************************
-*					*
-*	  SUPER BUS RACING 1.0		*
-*					*
-*****************************************
-Esteban Marin & Adrian Castillo
+
+#Super Bus Racing!
 
 This is a car racing game inspired in Super OffRoad, where up to 4 buses run in a 4x4 circuit, built with Bullet Library. 
-
 
 ##Members:
 Our team consists of: Esteban Marin - https://github.com/estebanmi Adrian Castillo - https://github.com/adriancl1
