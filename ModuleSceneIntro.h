@@ -49,6 +49,8 @@ public:
 	const char* themes[6];
 	int music_time;
 	int current_time;
+	int ball_time;
+	int ballforce=25;
 	char* winner;
 
 	uint lap;

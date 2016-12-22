@@ -115,3 +115,7 @@ int PhysBody3D::CheckPointId()const {
 btRigidBody* PhysBody3D::GetRigidBody() {
 	return body;
 }
+
+void PhysBody3D::SetFriction(int friction) {
+	body->setFriction(friction);
+}

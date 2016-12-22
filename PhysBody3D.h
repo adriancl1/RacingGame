@@ -21,6 +21,7 @@ public:
 	void SetPos(float x, float y, float z);
 	void SetAsSensor(bool is_sensor);
 	void SetAsCheckpoint(bool is_checkpoint, int id, vec3 pos = { 0,0,0 });
+	void SetFriction(int friction);
 	bool IsSensor() const;
 	bool IsCheckpoint() const;
 	bool IsVehicle() const;

@@ -4,6 +4,7 @@
 #include "Primitive.h"
 #include "PhysBody3D.h"
 #include "PhysVehicle3D.h"
+#include "ModulePhysics3D.h"
 #include <time.h>
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -38,7 +39,11 @@ bool ModuleSceneIntro::Start()
 	winner = "";
 	App->audio->PlayMusic(themes[0]);
 	music_time = SDL_GetTicks() + 9000;
+	ball_time = SDL_GetTicks() + 3000;
+	ballforce = 25;
+
 	srand(time(NULL));
+
 	CreateStage();
 	App->audio->PlayFx(start);
 	return ret;
@@ -77,6 +82,12 @@ update_status ModuleSceneIntro::Update(float dt)
 		cylinderlist->data.Render();
 		cylinderbody = cylinderbody->next;
 	}
+	if (current_time > ball_time) {
+		ball_time = SDL_GetTicks() + 3000;
+		ballforce = -ballforce;
+		ballbody->GetRigidBody()->setLinearVelocity(btVector3(0, 0, ballforce));
+	}
+
 
 	ballbody->GetTransform(&(ball.transform));
 	ball.Render();
@@ -259,14 +270,16 @@ void ModuleSceneIntro::CreateStage() {
 	ball.SetPos(-30, 20, -40);
 	ball.color = Gray;
 	ballbody = App->physics->AddBody(ball, 5000);
-	ballbody->GetRigidBody()->setFriction(0);
+	ballbody->SetFriction(0);
+	ballbody->GetRigidBody()->setLinearVelocity(btVector3(0, 0, ballforce));
 
 	stick.size = { 0.1f,20.0f,0.1f };
 	stick.color = Blue;
 	stick.SetPos(-30, 30, -40);
 	stick.SetRotation(45, { 0,1,0 });
 	stickbody = App->physics->AddBody(stick,5000);
-	stickbody->GetRigidBody()->setFriction(0);
+	
+	stickbody->SetFriction(0);
 
 	roof.size = { 5.0f,1.0f,5.0f };
 	roof.color = Blue;
